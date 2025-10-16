@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>API Snapshot</title>
+    <style>body{font-family:Segoe UI,Roboto,Arial;margin:40px;color:#111}</style>
+  </head>
+  <body>
+    <h1>API Overview</h1>
+    <p>Main endpoints:</p>
+    <ul>
+      <li>GET / -> Health & info</li>
+      <li>GET /ui -> Serves frontend HTML</li>
+      <li>POST /chat -> Chat endpoint (JSON: { user_input, session_id })</li>
+    </ul>
+    <p>Example curl:</p>
+    <pre>curl -X POST -H "Content-Type: application/json" -d '{"user_input":"hello"}' http://localhost:8000/chat</pre>
+  </body>
+</html>
