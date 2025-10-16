@@ -15,7 +15,7 @@ class ChatSession(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     session_id = Column(String, unique=True, index=True)
-    user_details = Column(JSON, nullable=True)  # Store user info like name, experience, etc.
+    user_details = Column(JSON, nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
@@ -24,7 +24,7 @@ class Message(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     session_id = Column(String, index=True)
-    role = Column(String)  # user or assistant
+    role = Column(String)
     content = Column(Text)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
@@ -34,14 +34,12 @@ class CandidateProfile(Base):
     id = Column(Integer, primary_key=True, index=True)
     session_id = Column(String, index=True)
     name = Column(String)
-    experience_years = Column(Float)  # Extracted numeric experience
-    experience_raw = Column(String)   # Original text
+    experience_years = Column(Float)
+    experience_raw = Column(String)
     position = Column(String)
-    tech_stack = Column(JSON)         # Parsed technologies
-    skills_extracted = Column(JSON)   # AI-extracted skills
-    competency_level = Column(String) # junior/mid/senior
-    technical_answer = Column(Text)   # Their technical response
-    ai_assessment = Column(JSON)      # AI analysis of their answers
+    tech_stack = Column(JSON)
+    skills_extracted = Column(JSON)
+    competency_level = Column(String)
+    technical_answer = Column(Text)
+    ai_assessment = Column(JSON)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
-
-# Base.metadata.create_all(bind=engine)  # Moved to api.py startup

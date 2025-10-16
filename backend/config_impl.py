@@ -1,6 +1,7 @@
 """
-Priyam AI Configuration Management
-Enhanced configuration system with feature flags and environment variable support
+Priyam AI Configuration Management (backend copy)
+This file is a backend-local copy of the top-level configuration to enable
+moving configuration into the `backend/` package during reorganization.
 """
 import os
 from typing import Optional, List
@@ -20,8 +21,6 @@ class Config:
     REPETITION_PENALTY: float = float(os.getenv("REPETITION_PENALTY", "1.2"))
 
     # Database Configuration
-    # Auto-detect if running inside Docker or locally
-    # Check multiple indicators for Docker environment
     is_docker = (
         os.path.exists("/.dockerenv") or
         os.getenv("DOCKER_CONTAINER") == "true" or
@@ -65,23 +64,17 @@ class Config:
     GREENHOUSE_API_KEY: str = os.getenv("GREENHOUSE_API_KEY", "")
 
 class FeatureFlags:
-    """Feature flag management for controlled feature rollout"""
-
-    # Advanced Features
     VOICE_INTERVIEWS: bool = os.getenv("ENABLE_VOICE_INTERVIEWS", "false").lower() == "true"
     ADVANCED_ANALYTICS: bool = os.getenv("ENABLE_ADVANCED_ANALYTICS", "false").lower() == "true"
     MULTI_LANGUAGE: bool = os.getenv("ENABLE_MULTI_LANGUAGE", "false").lower() == "true"
     SENTIMENT_ANALYSIS: bool = os.getenv("ENABLE_SENTIMENT_ANALYSIS", "false").lower() == "true"
     CANDIDATE_SCORING: bool = os.getenv("ENABLE_CANDIDATE_SCORING", "false").lower() == "true"
-
-    # Enterprise Features
     MULTI_TENANT: bool = os.getenv("ENABLE_MULTI_TENANT", "false").lower() == "true"
     AUDIT_LOGGING: bool = os.getenv("ENABLE_AUDIT_LOGGING", "false").lower() == "true"
     API_RATE_LIMITING: bool = os.getenv("ENABLE_API_RATE_LIMITING", "true").lower() == "true"
 
     @classmethod
     def get_enabled_features(cls) -> List[str]:
-        """Get list of all enabled features"""
         features = []
         for attr_name in dir(cls):
             if not attr_name.startswith('_') and isinstance(getattr(cls, attr_name), bool):
@@ -91,12 +84,9 @@ class FeatureFlags:
 
     @classmethod
     def is_feature_enabled(cls, feature_name: str) -> bool:
-        """Check if a specific feature is enabled"""
         return getattr(cls, feature_name.upper(), False)
 
 class ThemeManager:
-    """Theme management system for UI customization"""
-
     AVAILABLE_THEMES = {
         'corporate': {
             'primary': '#3b82f6',
@@ -123,37 +113,13 @@ class ThemeManager:
 
     @classmethod
     def get_theme_colors(cls, theme_name: str) -> dict:
-        """Get color palette for a specific theme"""
         return cls.AVAILABLE_THEMES.get(theme_name, cls.AVAILABLE_THEMES['corporate'])
 
     @classmethod
     def get_available_themes(cls) -> List[str]:
-        """Get list of available theme names"""
         return list(cls.AVAILABLE_THEMES.keys())
 
 # Global instances
 config = Config()
 feature_flags = FeatureFlags()
 theme_manager = ThemeManager()
-
-def validate_configuration():
-    """Validate critical configuration settings"""
-    errors = []
-
-    if not config.GROQ_API_KEY:
-        errors.append("GROQ_API_KEY is required for AI functionality")
-
-    if not config.SECRET_KEY or config.SECRET_KEY == "priyam_ai_secret_key_change_in_production":
-        errors.append("SECRET_KEY should be changed for production use")
-
-    if config.DEBUG and config.LOG_LEVEL.upper() == "DEBUG":
-        print("WARNING: Running in DEBUG mode with DEBUG logging")
-
-    return errors
-
-# Validate configuration on import
-validation_errors = validate_configuration()
-if validation_errors:
-    print("Configuration Validation Errors:")
-    for error in validation_errors:
-        print(f"  - {error}")
