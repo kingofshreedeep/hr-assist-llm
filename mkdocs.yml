@@ -1,0 +1,54 @@
+site_name: Priyam AI — HR Assist
+site_description: "Company-grade HR assistant powered by LLMs — API docs, deployment, and developer guide"
+site_author: OMCHOKSI108
+theme:
+  name: material
+  language: en
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+  font:
+    text: Roboto
+    code: Roboto Mono
+  features:
+    - navigation.instant
+    - navigation.sections
+    - header.autohide
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Architecture: architecture.md
+  - Configuration: configuration.md
+  - API Reference:
+    - Overview: api.md
+    - Endpoints: api_endpoints.md
+  - Frontend: frontend.md
+  - Screenshots: screenshots.md
+  - Contributing: contributing.md
+  - Deployment: deployment.md
+  - Developer Guide: developer.md
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/OMCHOKSI108/hr-assist-llm
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - pymdownx.superfences
+  - pymdownx.details
+  - footnotes
+site_name: TalentScout AI Documentation
+nav:
+  - Home: docs/index.md
+  - API: docs/api.md
+  - Frontend: docs/frontend.md
+  - Screenshots: docs/screenshots.md
+
+site_url: https://example.com
+theme:
+  name: material
