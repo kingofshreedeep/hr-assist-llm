@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, FileResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from models import SessionLocal, ChatSession, Message, CandidateProfile
 from groq import Groq
@@ -9,10 +10,7 @@ import os
 import re
 import random
 from sqlalchemy.orm.attributes import flag_modified
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
+from config import config, feature_flags
 
 # High-level question bank for different roles and experience levels
 QUESTION_BANK = {
@@ -175,9 +173,19 @@ def extract_skills_from_text(text: str) -> list:
     return found_skills
 
 app = FastAPI(
-    title="TalentScout AI Hiring Assistant API",
-    description="Backend API for the TalentScout AI Hiring Assistant chatbot",
-    version="1.0.0"
+    title="Priyam AI Hiring Assistant API",
+    description="Backend API for the Priyam AI Hiring Assistant chatbot with advanced features",
+    version="2.0.0",
+    debug=config.DEBUG
+)
+
+# Enable CORS for local development and same-origin serving
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 @app.get("/")
@@ -219,6 +227,14 @@ def get_api_docs():
 def startup_event():
     from models import engine, Base
     Base.metadata.create_all(bind=engine)
+
+@app.get("/ui", response_class=HTMLResponse)
+def serve_ui():
+    """Serve the professional UI HTML to avoid CORS issues."""
+    ui_path = os.path.join(os.getcwd(), "professional_ui.html")
+    if os.path.exists(ui_path):
+        return FileResponse(ui_path, media_type="text/html")
+    return HTMLResponse("<h1>UI file not found</h1>", status_code=404)
 
 # Initialize Groq client with API key from environment
 groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))

@@ -3,10 +3,12 @@ import requests
 import json
 import uuid
 from datetime import datetime
+from config import config, feature_flags, theme_manager
+from features import ui_feature_manager
 
 # Professional App Configuration
 st.set_page_config(
-    page_title="TalentScout AI - Professional Hiring Assistant",
+    page_title="Priyam AI - Professional Hiring Assistant",
     page_icon="🎯",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -111,18 +113,19 @@ st.markdown("""
     }
 
     .main .block-container {
-        padding: var(--space-6);
-        max-width: 1400px;
+        padding: var(--space-4) var(--space-6);
+        max-width: 100%;
         background: var(--bg-primary);
+        margin: 0 auto;
     }
 
     /* Professional Header */
     .main-header {
         background: var(--gradient-primary);
         color: white;
-        padding: var(--space-6);
+        padding: var(--space-4) var(--space-6);
         border-radius: var(--radius-xl);
-        margin-bottom: var(--space-6);
+        margin-bottom: var(--space-4);
         box-shadow: var(--shadow-lg);
         text-align: center;
     }
@@ -139,38 +142,41 @@ st.markdown("""
         margin: var(--space-2) 0 0 0;
     }
 
-    /* Sidebar Professional Styling */
+    /* Sidebar Professional Styling - Fixed Width and Alignment */
     .css-1d391kg {
         background: var(--bg-tertiary) !important;
         border-right: 1px solid var(--border-color);
+        min-width: 300px !important;
+        max-width: 300px !important;
+        padding: var(--space-4) !important;
     }
 
     .sidebar-content {
         background: var(--bg-secondary);
         border-radius: var(--radius-xl);
         border: 1px solid var(--border-color);
-        padding: var(--space-6);
+        padding: var(--space-4);
         box-shadow: var(--shadow-sm);
-        margin-bottom: var(--space-4);
+        margin-bottom: var(--space-3);
     }
 
-    /* Progress Section */
+    /* Progress Section - Better Spacing */
     .progress-title {
-        font-size: 1rem;
+        font-size: 0.95rem;
         font-weight: 600;
         color: var(--text-primary);
-        margin-bottom: var(--space-6);
+        margin-bottom: var(--space-4);
         display: flex;
         align-items: center;
-        gap: var(--space-3);
+        gap: var(--space-2);
     }
 
     .progress-item {
-        margin-bottom: var(--space-4);
+        margin-bottom: var(--space-3);
     }
 
     .progress-label {
-        font-size: 0.875rem;
+        font-size: 0.8rem;
         font-weight: 500;
         color: var(--text-secondary);
         margin-bottom: var(--space-2);
@@ -179,17 +185,18 @@ st.markdown("""
         gap: var(--space-2);
     }
 
-    /* Chat Container */
+    /* Chat Container - Smaller Size */
     .chat-container {
         background: var(--bg-secondary);
         border-radius: var(--radius-xl);
         border: 1px solid var(--border-color);
-        padding: var(--space-6);
-        min-height: 500px;
-        max-height: 600px;
+        padding: var(--space-4);
+        min-height: 300px;
+        max-height: 400px;
         overflow-y: auto;
         box-shadow: var(--shadow-md);
-        margin-bottom: var(--space-6);
+        margin-bottom: var(--space-4);
+        margin-top: 0;
     }
 
     .message-container {
@@ -204,7 +211,7 @@ st.markdown("""
         border-radius: var(--radius-lg);
         border-bottom-left-radius: var(--radius-sm);
         max-width: 75%;
-        margin-left: auto;
+        margin-right: auto;
         font-size: 0.9375rem;
         line-height: 1.6;
         word-wrap: break-word;
@@ -218,7 +225,7 @@ st.markdown("""
         border-bottom-right-radius: var(--radius-sm);
         border: 1px solid var(--border-color);
         max-width: 75%;
-        margin-right: auto;
+        margin-left: auto;
         font-size: 0.9375rem;
         line-height: 1.6;
         word-wrap: break-word;
@@ -275,15 +282,59 @@ st.markdown("""
         margin-bottom: var(--space-4);
     }
 
-    /* Responsive Design */
+    /* Responsive Design - Enhanced Layout */
     @media (max-width: 768px) {
         .main .block-container {
-            padding: var(--space-4);
+            padding: var(--space-3);
+        }
+        
+        .css-1d391kg {
+            min-width: 250px !important;
+            max-width: 250px !important;
+        }
+        
+        .sidebar-content {
+            padding: var(--space-3);
+        }
+        
+        .chat-container {
+            padding: var(--space-3);
+            min-height: 250px;
+            max-height: 350px;
         }
         
         .message-assistant, .message-user {
             max-width: 90%;
         }
+        
+        .main-header {
+            padding: var(--space-3);
+        }
+    }
+
+    @media (min-width: 1200px) {
+        .main .block-container {
+            padding: var(--space-6) var(--space-8);
+        }
+        
+        .chat-container {
+            min-height: 350px;
+            max-height: 450px;
+        }
+    }
+
+    /* Layout Alignment Fixes */
+    [data-testid="stAppViewContainer"] > .main {
+        padding-top: 0 !important;
+    }
+
+    [data-testid="stHeader"] {
+        display: none !important;
+    }
+
+    /* Streamlit Main Content Area */
+    .main .block-container {
+        padding-top: var(--space-4) !important;
     }
 
     /* Progress Bar Custom Styling */
@@ -320,9 +371,251 @@ if "progress" not in st.session_state:
 def toggle_theme():
     st.session_state.is_dark_theme = not st.session_state.is_dark_theme
 
-# Apply theme
-theme_attribute = 'data-theme="dark"' if st.session_state.is_dark_theme else ''
-st.markdown(f'<script>document.body.setAttribute("data-theme", "{("dark" if st.session_state.is_dark_theme else "light")}")</script>', unsafe_allow_html=True)
+# Apply theme using CSS classes and dynamic styles
+if st.session_state.is_dark_theme:
+    st.markdown("""
+    <style>
+        /* DARK THEME - Comprehensive Styling */
+        .stApp, .main .block-container, [data-testid="stAppViewContainer"] {
+            background-color: #0f172a !important;
+            color: #f8fafc !important;
+        }
+        
+        /* Sidebar dark theme */
+        .sidebar-content, .chat-container {
+            background-color: #1e293b !important;
+            border-color: #475569 !important;
+            color: #f8fafc !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        /* Messages dark theme */
+        .message-assistant {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+            color: white !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        .message-user {
+            background-color: #334155 !important;
+            color: #f8fafc !important;
+            border-color: #475569 !important;
+        }
+        
+        /* Sidebar background dark */
+        .css-1d391kg, [data-testid="stSidebar"] {
+            background-color: #1e293b !important;
+            border-right: 1px solid #475569 !important;
+        }
+        
+        /* Progress bars dark theme with attractive colors */
+        .stProgress > div > div {
+            background-color: #334155 !important;
+            border-radius: 1rem !important;
+            height: 8px !important;
+        }
+        
+        .stProgress > div > div > div {
+            background: linear-gradient(90deg, #10b981 0%, #059669 50%, #047857 100%) !important;
+            border-radius: 1rem !important;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.4) !important;
+            animation: progressGlow 2s ease-in-out infinite alternate !important;
+        }
+        
+        /* Progress glow animation */
+        @keyframes progressGlow {
+            from { box-shadow: 0 0 8px rgba(16, 185, 129, 0.4); }
+            to { box-shadow: 0 0 12px rgba(16, 185, 129, 0.6); }
+        }
+        
+        /* Progress labels dark theme */
+        .progress-title, .progress-label {
+            color: #f8fafc !important;
+        }
+        
+        /* Button dark theme */
+        .stButton > button {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+            color: white !important;
+            border: none !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+        }
+        
+        .stButton > button:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4) !important;
+            transform: translateY(-1px) !important;
+        }
+        
+        /* Input fields dark theme */
+        .stTextInput > div > div > input {
+            background-color: #334155 !important;
+            color: #f8fafc !important;
+            border-color: #475569 !important;
+            border-radius: 0.75rem !important;
+        }
+        
+        .stTextInput > div > div > input:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+        }
+        
+        /* Selectbox dark theme */
+        .stSelectbox > div > div > div {
+            background-color: #334155 !important;
+            color: #f8fafc !important;
+            border-color: #475569 !important;
+        }
+        
+        /* Main header dark mode gradient */
+        .main-header {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%) !important;
+            border: 1px solid #475569 !important;
+        }
+        
+        /* Slider components dark theme */
+        [data-testid="stSlider"] > div > div > div {
+            background-color: #334155 !important;
+        }
+        
+        [data-testid="stSlider"] > div > div > div > div {
+            background-color: #10b981 !important;
+        }
+        
+        /* Metric cards dark theme */
+        [data-testid="metric-container"] {
+            background-color: #1e293b !important;
+            border: 1px solid #475569 !important;
+            border-radius: 0.75rem !important;
+            padding: 1rem !important;
+        }
+        
+        /* Expander dark theme */
+        [data-testid="stExpander"] {
+            background-color: #1e293b !important;
+            border: 1px solid #475569 !important;
+            border-radius: 0.75rem !important;
+        }
+        
+        /* Info box dark theme */
+        .stAlert {
+            background-color: #1e293b !important;
+            border: 1px solid #475569 !important;
+            color: #f8fafc !important;
+        }
+        
+        /* Session info styling */
+        .sidebar-content p {
+            color: #cbd5e1 !important;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+else:
+    # Light theme (default) - ensure light colors are applied with attractive progress bars
+    st.markdown("""
+    <style>
+        /* LIGHT THEME - Enhanced Styling */
+        .stApp, .main .block-container, [data-testid="stAppViewContainer"] {
+            background-color: #f8fafc !important;
+            color: #0f172a !important;
+        }
+        
+        /* Sidebar light theme */
+        .sidebar-content, .chat-container {
+            background-color: white !important;
+            border-color: #e2e8f0 !important;
+            color: #0f172a !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        /* Messages light theme */
+        .message-assistant {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+            color: white !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        .message-user {
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+            border-color: #e2e8f0 !important;
+        }
+        
+        /* Sidebar background light */
+        .css-1d391kg, [data-testid="stSidebar"] {
+            background-color: #f1f5f9 !important;
+            border-right: 1px solid #e2e8f0 !important;
+        }
+        
+        /* Progress bars light theme with attractive colors */
+        .stProgress > div > div {
+            background-color: #e2e8f0 !important;
+            border-radius: 1rem !important;
+            height: 8px !important;
+        }
+        
+        .stProgress > div > div > div {
+            background: linear-gradient(90deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%) !important;
+            border-radius: 1rem !important;
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.3) !important;
+            animation: progressGlow 2s ease-in-out infinite alternate !important;
+        }
+        
+        /* Progress glow animation */
+        @keyframes progressGlow {
+            from { box-shadow: 0 0 8px rgba(59, 130, 246, 0.3); }
+            to { box-shadow: 0 0 12px rgba(59, 130, 246, 0.5); }
+        }
+        
+        /* Button light theme */
+        .stButton > button {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+            color: white !important;
+            border: none !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        .stButton > button:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+            transform: translateY(-1px) !important;
+        }
+        
+        /* Input fields light theme */
+        .stTextInput > div > div > input {
+            background-color: white !important;
+            color: #0f172a !important;
+            border-color: #e2e8f0 !important;
+            border-radius: 0.75rem !important;
+        }
+        
+        .stTextInput > div > div > input:focus {
+            border-color: #3b82f6 !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+        }
+        
+        /* Selectbox light theme */
+        .stSelectbox > div > div > div {
+            background-color: white !important;
+            color: #0f172a !important;
+            border-color: #e2e8f0 !important;
+        }
+        
+        /* Slider components light theme */
+        [data-testid="stSlider"] > div > div > div {
+            background-color: #e2e8f0 !important;
+        }
+        
+        [data-testid="stSlider"] > div > div > div > div {
+            background-color: #3b82f6 !important;
+        }
+        
+        /* Session info styling */
+        .sidebar-content p {
+            color: #64748b !important;
+        }
+    </style>
+    """, unsafe_allow_html=True)
 
 # Professional Header
 st.markdown("""
@@ -341,12 +634,17 @@ with st.sidebar:
         </div>
     """, unsafe_allow_html=True)
     
-    # Theme Toggle
-    st.markdown('<div class="theme-toggle-container">', unsafe_allow_html=True)
-    if st.button("🌙 Dark Mode" if not st.session_state.is_dark_theme else "☀️ Light Mode", 
-                 key="theme_toggle", on_click=toggle_theme):
+    # Theme Toggle with better styling
+    st.markdown("""
+    <div class="theme-toggle-container" style="margin-bottom: 1rem; text-align: center;">
+        <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">🎨 Theme</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    theme_button_text = "🌙 Switch to Dark Mode" if not st.session_state.is_dark_theme else "☀️ Switch to Light Mode"
+    if st.button(theme_button_text, key="theme_toggle", help="Toggle between light and dark themes"):
+        toggle_theme()
         st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
     
     # Progress indicators
     progress_items = [
@@ -366,9 +664,19 @@ with st.sidebar:
         """, unsafe_allow_html=True)
         st.progress(st.session_state.progress[key] / 100)
     
+    # Feature Flag Controlled UI Elements
+    st.markdown('<div class="feature-flags-section">', unsafe_allow_html=True)
+
+    # Voice Interviews Feature
+    ui_feature_manager.render_voice_interview_button()
+
+    # Multi-language Support
+    ui_feature_manager.render_multi_language_selector()
+
+    # Advanced Analytics
+    ui_feature_manager.render_advanced_analytics()
+
     st.markdown('</div>', unsafe_allow_html=True)
-    
-    # Session Info
     st.markdown("""
     <div class="sidebar-content">
         <div class="progress-title">
@@ -382,30 +690,38 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-# Main Chat Interface
-st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+# Main Chat Interface - Better Layout Structure
+col1, col2 = st.columns([1, 0.02])  # Adding small gap column for better spacing
 
-# Display chat messages
-if not st.session_state.messages:
-    st.markdown("""
-    <div class="message-container">
-        <div class="message-assistant">
-            Welcome to TalentScout AI. I'm your professional hiring assistant designed to evaluate candidates efficiently. Let's begin with your full name.
+with col1:
+    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+
+    # Display chat messages
+    if not st.session_state.messages:
+        st.markdown("""
+        <div class="message-container">
+            <div class="message-assistant">
+                Welcome to TalentScout AI. I'm your professional hiring assistant designed to evaluate candidates efficiently. Let's begin with your full name.
+            </div>
         </div>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
-for message in st.session_state.messages:
-    message_class = "message-assistant" if message["role"] == "assistant" else "message-user"
-    st.markdown(f"""
-    <div class="message-container">
-        <div class="{message_class}">
-            {message["content"]}
+    for message in st.session_state.messages:
+        message_class = "message-assistant" if message["role"] == "assistant" else "message-user"
+        sentiment_html = ""
+        if message["role"] == "assistant" and feature_flags.SENTIMENT_ANALYSIS:
+            sentiment_html = '<div class="sentiment-indicator">💭 Sentiment: Positive</div>'
+
+        st.markdown(f"""
+        <div class="message-container">
+            <div class="{message_class}">
+                {message["content"]}
+                {sentiment_html}
+            </div>
         </div>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
-st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # Progress analysis function
 def analyze_progress(message):
@@ -427,14 +743,35 @@ def analyze_progress(message):
     if any(word in text for word in ["python", "javascript", "java", "react", "angular", "vue", "node", "sql", "aws", "azure", "docker"]):
         st.session_state.progress["skills"] = 100
 
-# Chat input and API communication
-col1, col2 = st.columns([4, 1])
+# Chat input and API communication - Aligned with main content
+chat_col1, chat_col2 = st.columns([1, 0.02])  # Match the main chat container structure
 
-with col1:
-    user_input = st.text_input("", placeholder="Enter your response...", key="user_input")
+with chat_col1:
+    # Input area with proper alignment
+    input_col1, input_col2 = st.columns([4, 1])
+    
+    with input_col1:
+        user_input = st.text_input("", placeholder="Enter your response...", key="user_input")
+    
+    with input_col2:
+        send_button = st.button("Send 📤", key="send_button")
 
-with col2:
-    send_button = st.button("Send 📤", key="send_button")
+# Handle Enter key press with JavaScript
+st.markdown("""
+<script>
+    const inputField = document.querySelector('input[placeholder="Enter your response..."]');
+    const sendButton = document.querySelector('button[key="send_button"]');
+    
+    if (inputField && sendButton) {
+        inputField.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendButton.click();
+            }
+        });
+    }
+</script>
+""", unsafe_allow_html=True)
 
 if send_button and user_input:
     # Add user message
