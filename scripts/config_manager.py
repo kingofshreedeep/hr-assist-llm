@@ -62,8 +62,8 @@ class ConfigValidator:
         # Skip database test if not running in Docker
         if not config.Config.is_docker:
             print("Database connection test skipped (not running in Docker)")
-            print("💡 To test database connectivity, run: docker-compose up -d db")
-            print("💡 Then run this script inside Docker: docker-compose exec app python config_manager.py")
+            print("To test database connectivity, run: docker-compose up -d db")
+            print("Then run this script inside Docker: docker-compose exec app python config_manager.py")
             return True
 
         try:
@@ -266,60 +266,60 @@ class FeatureFlagManager:
 # Utility functions
 def print_config_status():
     """Print comprehensive configuration status"""
-    print("🔧 Priyam AI Configuration Status")
+    print("Priyam AI Configuration Status")
     print("=" * 50)
 
     validation = ConfigValidator.validate_all()
     env_check = ConfigManager.check_env_completeness()
 
-    print(f"✅ Configuration Valid: {validation['valid']}")
-    print(f"📊 Environment Completeness: {env_check['completion_percentage']:.1f}%")
+    print(f"Configuration Valid: {validation['valid']}")
+    print(f"Environment Completeness: {env_check['completion_percentage']:.1f}%")
 
     if validation['errors']:
-        print("\n❌ Critical Issues:")
+        print("\nCritical Issues:")
         for error in validation['errors']:
-            print(f"  • {error}")
+            print(f"  - {error}")
 
     if validation['warnings']:
-        print("\n⚠️  Warnings:")
+        print("\nWarnings:")
         for warning in validation['warnings']:
-            print(f"  • {warning}")
+            print(f"  - {warning}")
 
     if validation['recommendations']:
-        print("\n💡 Recommendations:")
+        print("\nRecommendations:")
         for rec in validation['recommendations']:
-            print(f"  • {rec}")
+            print(f"  - {rec}")
 
-    print(f"\n🎯 Enabled Features: {', '.join(feature_flags.get_enabled_features())}")
-    print(f"🎨 Available Themes: {', '.join(theme_manager.get_available_themes())}")
+    print(f"\nEnabled Features: {', '.join(feature_flags.get_enabled_features())}")
+    print(f"Available Themes: {', '.join(theme_manager.get_available_themes())}")
 
 def setup_configuration():
     """Initial configuration setup"""
-    print("🚀 Setting up Priyam AI Configuration...")
+    print("Setting up Priyam AI Configuration...")
 
     # Generate template if it doesn't exist
     if not Path(".env.template").exists():
         ConfigManager.save_env_template()
-        print("📄 Generated .env.template file")
+        print("Generated .env.template file")
 
     # Validate current configuration
     print_config_status()
 
     # Test connections
-    print("\n🔍 Testing Connections...")
+    print("\nTesting Connections...")
     db_ok = ConfigValidator.validate_database_connection()
     ai_ok = ConfigValidator.validate_ai_connection()
 
     if config.is_docker:
-        print(f"🗄️  Database: {'✅ Connected' if db_ok else '❌ Failed'}")
+        print(f"Database: {'Connected' if db_ok else 'Failed'}")
     else:
-        print(f"🗄️  Database: {'✅ Available (Docker)' if db_ok else '⚠️  Skipped (run in Docker)'}")
-    print(f"🤖 AI Service: {'✅ Connected' if ai_ok else '❌ Failed'}")
+        print(f"Database: {'Available (Docker)' if db_ok else 'Skipped (run in Docker)'}")
+    print(f"AI Service: {'Connected' if ai_ok else 'Failed'}")
 
     if db_ok and ai_ok:
-        print("\n🎉 Configuration setup complete!")
+        print("\nConfiguration setup complete!")
     else:
-        print("\n⚠️  Some connections failed. Please check your configuration.")
+        print("\nSome connections failed. Please check your configuration.")
 
 if __name__ == "__main__":
     setup_configuration()
