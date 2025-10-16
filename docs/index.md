@@ -1,6 +1,6 @@
-# Priyam AI — HR Assist
+# sans AI — HR Assist
 
-Welcome to the official project documentation for Priyam AI — HR Assist. This documentation provides setup, deployment, API reference, and frontend integration guidance for the repository.
+Welcome to the official project documentation for sans AI — HR Assist. This documentation provides setup, deployment, API reference, and frontend integration guidance for the repository.
 
 Quick links:
 
@@ -12,7 +12,7 @@ Quick links:
 This site is intended to be wide, clean, and company-friendly. Replace placeholder images under `assets/images/` with real screenshots captured from your running system.
 # TalentScout AI Documentation
 
-Welcome to the documentation for TalentScout AI (Priyam AI) — Professional Hiring Assistant.
+Welcome to the documentation for TalentScout AI (sans AI) — Professional Hiring Assistant.
 
 This documentation provides an overview, developer setup, API reference, and UI guide.
 
@@ -22,3 +22,4 @@ This documentation provides an overview, developer setup, API reference, and UI 
 - API Reference
 - Frontend Guide
 - Screenshots (assets)
+

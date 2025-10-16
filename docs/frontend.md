@@ -16,3 +16,4 @@ Streamlit loads the UI using an iframe and sends a postMessage to set `window.AP
 The frontend HTML is `professional_ui.html`. It can be served directly by FastAPI at `/ui` or embedded into the Streamlit app via an iframe.
 
 Place screenshots under `assets/images` and reference them from this page or the root `README.md`.
+

@@ -41,3 +41,4 @@ This document will describe the backend API endpoints. Add examples and screensh
 - POST /chat -> Chat endpoint: Accepts JSON { session_id?: string, user_input: string }
 - GET /sessions/{session_id} -> Retrieve session history
 - GET /ui -> Serves the HTML UI
+

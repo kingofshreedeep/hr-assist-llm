@@ -43,3 +43,4 @@ class CandidateProfile(Base):
     technical_answer = Column(Text)
     ai_assessment = Column(JSON)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
+

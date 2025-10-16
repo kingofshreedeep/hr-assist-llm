@@ -1,5 +1,5 @@
 """
-Priyam AI Configuration Management
+sans AI Configuration Management
 Enhanced configuration system with feature flags and environment variable support
 """
 import os
@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class Config:
-    """Centralized configuration management for Priyam AI"""
+    """Centralized configuration management for sans AI"""
 
     # AI Configuration
     GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
@@ -36,7 +36,7 @@ class Config:
     # Application Settings
     DEBUG: bool = os.getenv("DEBUG", "true").lower() == "true"
     LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "priyam_ai_secret_key_change_in_production")
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "sans_ai_secret_key_change_in_production")
     SESSION_TIMEOUT: int = int(os.getenv("SESSION_TIMEOUT", "3600"))
 
     # Caching Configuration
@@ -46,7 +46,7 @@ class Config:
     # Security Settings
     CORS_ORIGINS: List[str] = os.getenv("CORS_ORIGINS", "http://localhost:8501,http://localhost:3000").split(",")
     API_RATE_LIMIT: int = int(os.getenv("API_RATE_LIMIT", "100"))
-    JWT_SECRET: str = os.getenv("JWT_SECRET", "priyam_ai_jwt_secret_change_in_production")
+    JWT_SECRET: str = os.getenv("JWT_SECRET", "sans_ai_jwt_secret_change_in_production")
 
     # UI Configuration
     DEFAULT_THEME: str = os.getenv("DEFAULT_THEME", "light")
@@ -143,7 +143,7 @@ def validate_configuration():
     if not config.GROQ_API_KEY:
         errors.append("GROQ_API_KEY is required for AI functionality")
 
-    if not config.SECRET_KEY or config.SECRET_KEY == "priyam_ai_secret_key_change_in_production":
+    if not config.SECRET_KEY or config.SECRET_KEY == "sans_ai_secret_key_change_in_production":
         errors.append("SECRET_KEY should be changed for production use")
 
     if config.DEBUG and config.LOG_LEVEL.upper() == "DEBUG":
@@ -157,3 +157,4 @@ if validation_errors:
     print("Configuration Validation Errors:")
     for error in validation_errors:
         print(f"  - {error}")
+

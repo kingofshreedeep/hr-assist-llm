@@ -9,7 +9,7 @@ from frontend.features import ui_feature_manager
 
 # Professional App Configuration
 st.set_page_config(
-    page_title="Priyam AI - Professional Hiring Assistant",
+    page_title="Sans AI - Professional Hiring Assistant",
     page_icon=None,
     layout="wide",
     initial_sidebar_state="expanded"
@@ -717,3 +717,4 @@ try:
     components.html(init_js + iframe, height=820, scrolling=True)
 except Exception as e:
     st.error(f"Failed to embed UI: {e}")
+

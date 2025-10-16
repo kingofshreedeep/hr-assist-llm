@@ -9,3 +9,4 @@ Key variables:
 - `SECRET_KEY` — Application secret (change in production)
 
 Example `.env.example` is provided in the repository root.
+

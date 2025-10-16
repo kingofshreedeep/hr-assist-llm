@@ -29,3 +29,4 @@ Add screenshots of the running app here. Place images in `assets/images` and ref
 ![UI dark theme screenshot](../assets/images/ui-2.png)
 
 ![API endpoints screenshot](../assets/images/api-endpoints.png)
+
