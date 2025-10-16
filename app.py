@@ -1,4 +1,5 @@
 import streamlit as st
+import streamlit.components.v1 as components
 import requests
 import json
 import uuid
@@ -690,126 +691,29 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-# Main Chat Interface - Better Layout Structure
-col1, col2 = st.columns([1, 0.02])  # Adding small gap column for better spacing
-
-with col1:
-    st.markdown('<div class="chat-container">', unsafe_allow_html=True)
-
-    # Display chat messages
-    if not st.session_state.messages:
-        st.markdown("""
-        <div class="message-container">
-            <div class="message-assistant">
-                Welcome to TalentScout AI. I'm your professional hiring assistant designed to evaluate candidates efficiently. Let's begin with your full name.
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    for message in st.session_state.messages:
-        message_class = "message-assistant" if message["role"] == "assistant" else "message-user"
-        sentiment_html = ""
-        if message["role"] == "assistant" and feature_flags.SENTIMENT_ANALYSIS:
-            sentiment_html = '<div class="sentiment-indicator">💭 Sentiment: Positive</div>'
-
-        st.markdown(f"""
-        <div class="message-container">
-            <div class="{message_class}">
-                {message["content"]}
-                {sentiment_html}
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# Progress analysis function
-def analyze_progress(message):
-    text = message.lower()
-    
-    # Name detection
-    if len(message.split()) <= 4 and any(char.isalpha() for char in message):
-        st.session_state.progress["name"] = 100
-    
-    # Experience detection
-    if any(word in text for word in ["year", "experience", "exp"]) and any(char.isdigit() for char in text):
-        st.session_state.progress["experience"] = 100
-    
-    # Position detection
-    if any(word in text for word in ["developer", "engineer", "analyst", "manager", "architect", "lead", "senior", "junior"]):
-        st.session_state.progress["position"] = 100
-    
-    # Skills detection
-    if any(word in text for word in ["python", "javascript", "java", "react", "angular", "vue", "node", "sql", "aws", "azure", "docker"]):
-        st.session_state.progress["skills"] = 100
-
-# Chat input and API communication - Aligned with main content
-chat_col1, chat_col2 = st.columns([1, 0.02])  # Match the main chat container structure
-
-with chat_col1:
-    # Input area with proper alignment
-    input_col1, input_col2 = st.columns([4, 1])
-    
-    with input_col1:
-        user_input = st.text_input("", placeholder="Enter your response...", key="user_input")
-    
-    with input_col2:
-        send_button = st.button("Send 📤", key="send_button")
-
-# Handle Enter key press with JavaScript
-st.markdown("""
-<script>
-    const inputField = document.querySelector('input[placeholder="Enter your response..."]');
-    const sendButton = document.querySelector('button[key="send_button"]');
-    
-    if (inputField && sendButton) {
-        inputField.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendButton.click();
-            }
-        });
-    }
-</script>
-""", unsafe_allow_html=True)
-
-if send_button and user_input:
-    # Add user message
-    st.session_state.messages.append({"role": "user", "content": user_input})
-    
-    # Analyze progress
-    analyze_progress(user_input)
-    
-    # Send to API
-    try:
-        with st.spinner("Processing..."):
-            api_url = "http://localhost:8000/chat"
-            payload = {
-                "message": user_input,
-                "session_id": st.session_state.session_id
-            }
-            
-            response = requests.post(api_url, json=payload, timeout=30)
-            
-            if response.status_code == 200:
-                bot_response = response.json().get("response", "I apologize, but I couldn't process your response.")
-                st.session_state.messages.append({"role": "assistant", "content": bot_response})
-            else:
-                st.session_state.messages.append({"role": "assistant", "content": "I apologize, but I encountered a technical issue. Please try again."})
-                
-    except requests.exceptions.RequestException as e:
-        st.error(f"Connection error: {e}")
-        st.session_state.messages.append({"role": "assistant", "content": "I'm having trouble connecting to the AI service. Please ensure the backend is running."})
-    
-    # Clear input and rerun to show new messages
-    st.rerun()
-
-# Auto-scroll to bottom
-st.markdown("""
-<script>
-    var chatContainer = document.querySelector('.chat-container');
-    if (chatContainer) {
-        chatContainer.scrollTop = chatContainer.scrollHeight;
-    }
-</script>
-""", unsafe_allow_html=True)
+# Embed the same professional UI inside Streamlit
+st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+try:
+    with open("professional_ui.html", "r", encoding="utf-8") as f:
+        html = f.read()
+    # Set API base for the iframe and sync theme via postMessage
+    init_js = f"""
+    <script>
+      window.addEventListener('message', function(e){{}});
+      var desiredDark = {str(bool(st.session_state.is_dark_theme)).lower()};
+      window.__sendThemeToChild = function(){{
+          var iframe = document.getElementById('embedded-ui');
+          if (iframe && iframe.contentWindow) {{
+              iframe.contentWindow.postMessage({{type:'set-theme', theme: desiredDark ? 'dark' : 'light'}}, '*');
+          }}
+      }};
+      setTimeout(window.__sendThemeToChild, 400);
+    </script>
+    """
+    iframe = f"""
+    <iframe id="embedded-ui" srcdoc="{html.replace('"', '&quot;').replace('\n', ' ')}" style="width:100%; height:800px; border:0; border-radius:12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);"></iframe>
+    <script>window.API_BASE = 'http://localhost:8000';</script>
+    """
+    components.html(init_js + iframe, height=820, scrolling=True)
+except Exception as e:
+    st.error(f"Failed to embed UI: {e}")
