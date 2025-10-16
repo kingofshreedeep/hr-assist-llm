@@ -1,0 +1,21 @@
+# Ignore virtual environment
+venv/
+.venv/
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Git files
+.git/
+.gitignore
+
+# UV files
+uv.lock
+.python-version
+
+# Other
+.DS_Store
+*.log
