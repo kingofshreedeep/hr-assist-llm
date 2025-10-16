@@ -1,0 +1,31 @@
+{
+  "build": {
+    "builder": "dockerfile"
+  },
+  "deploy": {
+    "startCommand": "scripts/run.sh"
+  },
+  "environments": [
+    {
+      "name": "production",
+      "envVars": [
+        {
+          "name": "GROQ_API_KEY",
+          "value": "${{ GROQ_API_KEY }}"
+        },
+        {
+          "name": "DATABASE_URL",
+          "value": "${{ DATABASE_URL }}"
+        },
+        {
+          "name": "DEBUG",
+          "value": "false"
+        },
+        {
+          "name": "SECRET_KEY",
+          "value": "${{ SECRET_KEY }}"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: hr-assist-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: hr-assist-db
+          property: connectionString
+      - key: DEBUG
+        value: false
+      - key: SECRET_KEY
+        generateValue: true
+
+  - type: pserv
+    name: hr-assist-db
+    runtime: postgresql
+    plan: free
+
+  - type: web
+    name: hr-assist-frontend
+    runtime: static
+    buildCommand: echo "Static site built"
+    staticPublishPath: ./site
+    plan: free
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
