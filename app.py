@@ -4,13 +4,13 @@ import requests
 import json
 import uuid
 from datetime import datetime
-from config import config, feature_flags, theme_manager
-from features import ui_feature_manager
+from backend.config import config, feature_flags, theme_manager
+from frontend.features import ui_feature_manager
 
 # Professional App Configuration
 st.set_page_config(
     page_title="Priyam AI - Professional Hiring Assistant",
-    page_icon="🎯",
+    page_icon=None,
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -621,7 +621,7 @@ else:
 # Professional Header
 st.markdown("""
 <div class="main-header">
-    <h1 class="header-title">🎯 TalentScout AI</h1>
+    <h1 class="header-title">TalentScout AI</h1>
     <p class="header-subtitle">Professional Hiring Assistant</p>
 </div>
 """, unsafe_allow_html=True)
@@ -631,28 +631,28 @@ with st.sidebar:
     st.markdown("""
     <div class="sidebar-content">
         <div class="progress-title">
-            📊 Interview Progress
+            Interview Progress
         </div>
     """, unsafe_allow_html=True)
     
     # Theme Toggle with better styling
     st.markdown("""
     <div class="theme-toggle-container" style="margin-bottom: 1rem; text-align: center;">
-        <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">🎨 Theme</p>
+        <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">Theme</p>
     </div>
     """, unsafe_allow_html=True)
     
-    theme_button_text = "🌙 Switch to Dark Mode" if not st.session_state.is_dark_theme else "☀️ Switch to Light Mode"
+    theme_button_text = "Switch to Dark Mode" if not st.session_state.is_dark_theme else "Switch to Light Mode"
     if st.button(theme_button_text, key="theme_toggle", help="Toggle between light and dark themes"):
         toggle_theme()
         st.rerun()
     
     # Progress indicators
     progress_items = [
-        ("👤", "Personal Information", "name"),
-        ("💼", "Professional Experience", "experience"),
-        ("💻", "Role & Position", "position"),
-        ("⚡", "Technical Skills", "skills")
+        ("", "Personal Information", "name"),
+        ("", "Professional Experience", "experience"),
+        ("", "Role & Position", "position"),
+        ("", "Technical Skills", "skills")
     ]
     
     for icon, label, key in progress_items:

@@ -74,7 +74,7 @@ class UIFeatureManager:
     def render_advanced_analytics():
         """Render advanced analytics dashboard if feature is enabled"""
         def render_analytics():
-            with st.expander("📊 Advanced Analytics", expanded=False):
+            with st.expander("Advanced Analytics", expanded=False):
                 st.write("Advanced analytics features:")
                 st.write("- Candidate scoring trends")
                 st.write("- Interview performance metrics")
