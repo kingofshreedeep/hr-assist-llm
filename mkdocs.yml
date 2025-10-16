@@ -1,4 +1,4 @@
-site_name: sans AI — HR Assist
+site_name: Sans AI — HR Assist
 site_description: "Company-grade HR assistant powered by LLMs — API docs, deployment, and developer guide"
 site_author: OMCHOKSI108
 site_url: https://omchoksi108.github.io/hr-assist-llm/
@@ -43,12 +43,13 @@ plugins:
   - minify:
       minify_html: true
 
-extra:
-  social:
-    - icon: fontawesome/brands/github
-      link: https://github.com/OMCHOKSI108/hr-assist-llm
-    - icon: fontawesome/solid/globe
-      link: https://omchoksi108.github.io/hr-assist-llm/
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - pymdownx.superfences
+  - pymdownx.details
+  - footnotes
 
 nav:
   - Home: index.md
@@ -63,28 +64,11 @@ nav:
   - Deployment: deployment.md
   - Developer Guide: developer.md
   - Contributing: contributing.md
-  - Contributing: contributing.md
-  - Deployment: deployment.md
-  - Developer Guide: developer.md
+
 extra:
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/OMCHOKSI108/hr-assist-llm
-markdown_extensions:
-  - admonition
-  - toc:
-      permalink: true
-  - pymdownx.superfences
-  - pymdownx.details
-  - footnotes
-site_name: Sans AI — HR Assist
-nav:
-  - Home: docs/index.md
-  - API: docs/api.md
-  - Frontend: docs/frontend.md
-  - Screenshots: docs/screenshots.md
-
-site_url: https://example.com
-theme:
-  name: material
+    - icon: fontawesome/solid/globe
+      link: https://omchoksi108.github.io/hr-assist-llm/
 
